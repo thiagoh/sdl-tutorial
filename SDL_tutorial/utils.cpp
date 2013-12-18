@@ -61,15 +61,37 @@ void Utils::quit() {
 	SDL_Quit();
 }
 
-void Utils::draw(SDL_Texture *texture, SDL_Rect &dstRect, SDL_Rect *clip, float angle, int xPivot, int yPivot, SDL_RendererFlip flip) {
+void Utils::draw(SDL_Texture *texture, int x, int y, SDL_Rect *clip, float angle, SDL_RendererFlip flip) {
+
+	SDL_Rect dstRect;
+	dstRect.x = x;
+	dstRect.y = y;
+
+	SDL_QueryTexture(texture, NULL, NULL, &dstRect.w, &dstRect.h);
+
+	//Draw the texture
+	SDL_RenderCopyEx(_renderer.get(), texture, clip, &dstRect, angle, NULL, flip);
+}
+
+void Utils::draw(SDL_Texture *texture, SDL_Rect *dstRect, SDL_Rect *clip, float angle, int xPivot, int yPivot, SDL_RendererFlip flip) {
+
+	if (dstRect == nullptr) {
+
+		dstRect = new SDL_Rect();
+		dstRect->x = 0;
+		dstRect->y = 0;
+
+		SDL_QueryTexture(texture, NULL, NULL, &(dstRect->w), &(dstRect->h));
+	}
 
 	//Convert pivot pos from relative to object's center to screen space
-	xPivot += dstRect.w / 2;
-	yPivot += dstRect.h / 2;
+	xPivot += dstRect->w / 2;
+	yPivot += dstRect->h / 2;
+
 	//SDL expects an SDL_Point as the pivot location
 	SDL_Point pivot = { xPivot, yPivot };
 	//Draw the texture
-	SDL_RenderCopyEx(_renderer.get(), texture, clip, &dstRect, angle, &pivot, flip);
+	SDL_RenderCopyEx(_renderer.get(), texture, clip, dstRect, angle, &pivot, flip);
 }
 
 SDL_Texture* Utils::loadTexture(const char* filepath) {
@@ -97,7 +119,7 @@ SDL_Texture* Utils::renderText(const string &message, const string& fontFile, SD
 	//Open the font
 
 	TTF_Font *font = nullptr;
-	
+
 	font = TTF_OpenFont(fontFile.c_str(), fontSize);
 
 	if (font == nullptr)

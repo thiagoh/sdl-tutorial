@@ -29,7 +29,20 @@ public:
 
 	///Quit SDL and destroy the window and renderer
 	static void quit();
-    /**
+    
+	 
+	/**
+    *  Draw a SDL_Texture to the screen at dstRect with various other options
+    *  @param texture The SDL_Texture to draw
+    *  @param x The x coordinate of the texture
+	*  @param y The y coordinate of the texture
+    *  @param clip The clip to apply to the image, if desired
+    *  @param angle The rotation angle to apply to the texture, default is 0
+    *  @param flip The flip to apply to the image, default is none
+    */
+	static void draw(SDL_Texture *texture, int x, int y, SDL_Rect *clip = NULL, float angle = 0.0, SDL_RendererFlip flip = SDL_FLIP_NONE);
+
+	/**
     *  Draw a SDL_Texture to the screen at dstRect with various other options
     *  @param texture The SDL_Texture to draw
     *  @param dstRect The destination position and width/height to draw the texture with
@@ -39,7 +52,7 @@ public:
     *  @param yPivot The y coordinate of the pivot, relative to (0, 0) being center of dstRect
     *  @param flip The flip to apply to the image, default is none
     */
-    static void draw(SDL_Texture *texture, SDL_Rect &dstRect, SDL_Rect *clip = NULL, float angle = 0.0, int xPivot = 0, int yPivot = 0, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	static void draw(SDL_Texture *texture, SDL_Rect * dstRect =  NULL, SDL_Rect *clip = NULL, float angle = 0.0, int xPivot = 0, int yPivot = 0, SDL_RendererFlip flip = SDL_FLIP_NONE);
     /**
     *  Loads an image directly to texture using SDL_image's
     *  built in function IMG_LoadTexture
