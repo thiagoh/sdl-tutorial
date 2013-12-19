@@ -6,7 +6,7 @@
 #include <memory>
 
 #if defined(_MSC_VER)
-#include <SDL.h>
+#include <sdl/SDL.h>
 #endif
 
 using namespace std;

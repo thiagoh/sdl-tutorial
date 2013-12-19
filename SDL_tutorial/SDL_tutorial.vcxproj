@@ -48,7 +48,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(IncludePath);E:\dev\libs\SDL2-2.0.1\include;E:\dev\libs\SDL2-2.0.1\VisualC\SDL2_image-2.0.0\include;E:\dev\libs\SDL2_ttf-2.0.12\include</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)\include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);$(ProjectDir)\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

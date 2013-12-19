@@ -1,7 +1,7 @@
 #include "timer.h"
 
 #if defined(_MSC_VER)
-#include <SDL.h>
+#include <sdl/SDL.h>
 #endif
 
 Timer::Timer()

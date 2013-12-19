@@ -2,7 +2,7 @@
 and may not be redistributed without written permission.*/
 
 //Using SDL, standard IO, and strings
-#include <SDL.h>
+#include <sdl/SDL.h>
 #include <stdio.h>
 #include <string>
 
@@ -35,70 +35,70 @@ int main( int argc, char* args[] ) {
 	//Main loop flag
 	bool quit = false;
 
-
-
 	int x = 0;
 	int y = 0;
-	int moveSpeed = 10;
+	int moveSpeed = 5;
 	SDL_Texture * texture = Utils::loadTexture("images/iori-stand.png");
+
+	uint32_t lastDrawT = -1;
 
 	//Event handler
 	SDL_Event e;
 	bool draw = false;
 
+    SDL_EventState(SDL_KEYUP, SDL_IGNORE);
+
 	//While application is running
 	while( !quit ) {
 
+		//Handle events on queue
+
+		uint32_t tx1 = SDL_GetTicks();
+
+		SDL_PumpEvents();
+		const Uint8* keys = SDL_GetKeyboardState(NULL);
+
 		draw = false;
 
-		//Handle events on queue
-		if (SDL_PollEvent(&e) == 0)
-			continue;
-
 		//User requests quit
-		if ( e.type == SDL_QUIT ) {
 
-			quit = true;
-			break;
+		if ( keys[SDL_SCANCODE_UP] ) {
 
-		} else if ( e.type == SDL_KEYDOWN ) {
+			y -= moveSpeed;
+			draw = true;
 
-			if ( e.key.keysym.sym == SDLK_UP ) {
+		} 
+		if ( keys[SDL_SCANCODE_DOWN] ) {
 
-				y -= moveSpeed;
-				draw = true;
+			y += moveSpeed;
+			draw = true;
 
-			} else if ( e.key.keysym.sym == SDLK_DOWN ) {
+		} 
+		if ( keys[SDL_SCANCODE_LEFT] ) {
 
-				y += moveSpeed;
-				draw = true;
+			x -= moveSpeed;
+			draw = true;
+			printf("left\n");
 
-			} else if ( e.key.keysym.sym == SDLK_LEFT ) {
+		} 
+		if ( keys[SDL_SCANCODE_RIGHT] ) {
 
-				x -= moveSpeed;
-				draw = true;
-
-			} else if ( e.key.keysym.sym == SDLK_RIGHT ) {
-
-				x += moveSpeed;
-				draw = true;
-			}
-
-			if (draw) {
-
-				Utils::clear();
-				Utils::draw(texture, x, y);
-				Utils::present();
-			}
-
-			printf("%d %d\n", x, y);
+			x += moveSpeed;
+			draw = true;
+			printf("right\n");
 		}
 
-		if (!quit) {
+		if (draw) {
 
 			Utils::clear();
+			Utils::draw(texture, x, y);
+			Utils::present();
 		}
+
+		SDL_Delay(10);
 	}
+
+	Utils::clear();
 
 	//Free resources and close SDL
 	close();
