@@ -35,26 +35,69 @@ int main( int argc, char* args[] ) {
 	//Main loop flag
 	bool quit = false;
 
+
+
+	int x = 0;
+	int y = 0;
+	int moveSpeed = 10;
+	SDL_Texture * texture = Utils::loadTexture("images/iori-stand.png");
+
 	//Event handler
 	SDL_Event e;
+	bool draw = false;
 
 	//While application is running
 	while( !quit ) {
 
-		Utils::clear();
-
-		SDL_Texture * texture = Utils::loadTexture("images/iori-stand.png");
+		draw = false;
 
 		//Handle events on queue
-		while( SDL_PollEvent( &e ) != 0 ) {
+		if (SDL_PollEvent(&e) == 0)
+			continue;
 
-			//User requests quit
-			if( e.type == SDL_QUIT )
-				quit = true;
+		//User requests quit
+		if ( e.type == SDL_QUIT ) {
+
+			quit = true;
+			break;
+
+		} else if ( e.type == SDL_KEYDOWN ) {
+
+			if ( e.key.keysym.sym == SDLK_UP ) {
+
+				y -= moveSpeed;
+				draw = true;
+
+			} else if ( e.key.keysym.sym == SDLK_DOWN ) {
+
+				y += moveSpeed;
+				draw = true;
+
+			} else if ( e.key.keysym.sym == SDLK_LEFT ) {
+
+				x -= moveSpeed;
+				draw = true;
+
+			} else if ( e.key.keysym.sym == SDLK_RIGHT ) {
+
+				x += moveSpeed;
+				draw = true;
+			}
+
+			if (draw) {
+
+				Utils::clear();
+				Utils::draw(texture, x, y);
+				Utils::present();
+			}
+
+			printf("%d %d\n", x, y);
 		}
 
-		Utils::draw(texture);
-		Utils::present();
+		if (!quit) {
+
+			Utils::clear();
+		}
 	}
 
 	//Free resources and close SDL
