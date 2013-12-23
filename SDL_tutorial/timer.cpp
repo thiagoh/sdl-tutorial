@@ -8,34 +8,34 @@ Timer::Timer()
     : mStartTicks(0), mPausedTicks(0), mStarted(false), mPaused(false)
 {
 }
-void Timer::Start() {
+void Timer::start() {
     mStarted = true;
     mPaused  = false;
     mStartTicks = SDL_GetTicks();
 }
-void Timer::Stop() {
+void Timer::stop() {
     mStarted = false;
     mPaused  = false;
 }
-void Timer::Pause() {
+void Timer::pause() {
     if (mStarted && !mPaused) {
         mPaused = true;
         mPausedTicks = SDL_GetTicks() - mStartTicks;
     }
 }
-void Timer::Unpause() {
+void Timer::unpause() {
     if (mPaused) {
         mPaused = false;
         mStartTicks = SDL_GetTicks() - mPausedTicks;
         mPausedTicks = 0;
     }
 }
-int Timer::Restart() {
-    int elapsedTicks = Ticks();
-    Start();
+int Timer::restart() {
+    int elapsedTicks = ticks();
+    start();
     return elapsedTicks;
 }
-int Timer::Ticks() const {
+int Timer::ticks() const {
     if (mStarted) {
         if (mPaused)
             return mPausedTicks;
@@ -44,9 +44,9 @@ int Timer::Ticks() const {
     }
     return 0;
 }
-bool Timer::Started() const {
+bool Timer::started() const {
     return mStarted;
 }
-bool Timer::Paused() const {
+bool Timer::paused() const {
     return mPaused;
 }

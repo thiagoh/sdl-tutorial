@@ -48,11 +48,10 @@ public:
     *  @param dstRect The destination position and width/height to draw the texture with
     *  @param clip The clip to apply to the image, if desired
     *  @param angle The rotation angle to apply to the texture, default is 0
-    *  @param xPivot The x coordinate of the pivot, relative to (0, 0) being center of dstRect
-    *  @param yPivot The y coordinate of the pivot, relative to (0, 0) being center of dstRect
+    *  @param center The x,y coordinate of the pivot, relative to (0, 0) being center of dstRect
     *  @param flip The flip to apply to the image, default is none
     */
-	static void draw(SDL_Texture *texture, SDL_Rect * dstRect =  NULL, SDL_Rect *clip = NULL, float angle = 0.0, int xPivot = 0, int yPivot = 0, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	static void draw(SDL_Texture *texture, SDL_Rect * dstRect =  NULL, SDL_Rect *clip = NULL, float angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
     /**
     *  Loads an image directly to texture using SDL_image's
     *  built in function IMG_LoadTexture
@@ -62,6 +61,8 @@ public:
     static SDL_Texture* loadTexture(const string &file);
 
 	static SDL_Texture* loadTexture(const char * filepath );
+
+	static SDL_Texture* loadFromSurface(SDL_Surface* surface);
 
     /**
     *  Generate a texture containing the message we want to display
@@ -73,6 +74,9 @@ public:
     */
 	static SDL_Texture* renderText(const char* message, const char* fontFile, SDL_Color color, int fontSize);
     static SDL_Texture* renderText(const string &message, const string &fontFile, SDL_Color color, int fontSize);
+
+	static Uint32 getPixel32( SDL_Surface *surface, int x, int y );
+	static void putPixel32( SDL_Surface *surface, int x, int y, Uint32 pixel);
 
     ///Clear the renderer
     static void clear();

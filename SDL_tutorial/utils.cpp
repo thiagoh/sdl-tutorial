@@ -67,13 +67,22 @@ void Utils::draw(SDL_Texture *texture, int x, int y, SDL_Rect *clip, float angle
 	dstRect.x = x;
 	dstRect.y = y;
 
-	SDL_QueryTexture(texture, NULL, NULL, &dstRect.w, &dstRect.h);
+	if (clip == nullptr) {
+
+		SDL_QueryTexture(texture, NULL, NULL, &dstRect.w, &dstRect.h);
+
+	} else {
+
+		dstRect.w = clip->w;
+		dstRect.h = clip->h;
+	}
+
 
 	//Draw the texture
 	SDL_RenderCopyEx(_renderer.get(), texture, clip, &dstRect, angle, NULL, flip);
 }
 
-void Utils::draw(SDL_Texture *texture, SDL_Rect *dstRect, SDL_Rect *clip, float angle, int xPivot, int yPivot, SDL_RendererFlip flip) {
+void Utils::draw(SDL_Texture *texture, SDL_Rect *dstRect, SDL_Rect *clip, float angle, SDL_Point* center, SDL_RendererFlip flip) {
 
 	if (dstRect == nullptr) {
 
@@ -81,17 +90,27 @@ void Utils::draw(SDL_Texture *texture, SDL_Rect *dstRect, SDL_Rect *clip, float 
 		dstRect->x = 0;
 		dstRect->y = 0;
 
-		SDL_QueryTexture(texture, NULL, NULL, &(dstRect->w), &(dstRect->h));
+		if (clip == nullptr) {
+
+			SDL_QueryTexture(texture, NULL, NULL, &(dstRect->w), &(dstRect->h));
+
+		} else {
+
+			dstRect->w = clip->w;
+			dstRect->h = clip->h;
+		}
 	}
 
-	//Convert pivot pos from relative to object's center to screen space
-	xPivot += dstRect->w / 2;
-	yPivot += dstRect->h / 2;
+	if (center == nullptr) {
 
-	//SDL expects an SDL_Point as the pivot location
-	SDL_Point pivot = { xPivot, yPivot };
+		//Convert pivot pos from relative to object's center to screen space
+		center = new SDL_Point();
+		center->x = dstRect->w / 2;
+		center->y = dstRect->h / 2;
+	}
+
 	//Draw the texture
-	SDL_RenderCopyEx(_renderer.get(), texture, clip, dstRect, angle, &pivot, flip);
+	SDL_RenderCopyEx(_renderer.get(), texture, clip, dstRect, angle, center, flip);
 }
 
 SDL_Texture* Utils::loadTexture(const char* filepath) {
@@ -136,6 +155,28 @@ SDL_Texture* Utils::renderText(const string &message, const string& fontFile, SD
 	TTF_CloseFont(font);
 
 	return texture;
+}
+
+Uint32 Utils::getPixel32( SDL_Surface *surface, int x, int y ) {
+
+	//Convert the pixels to 32 bit
+	Uint32 *pixels = (Uint32 *)surface->pixels;
+
+	//Get the requested pixel
+	return pixels[ ( y * surface->w ) + x ];
+}
+
+void Utils::putPixel32( SDL_Surface *surface, int x, int y, Uint32 pixel) {
+	//Convert the pixels to 32 bit
+	Uint32 *pixels = (Uint32 *)surface->pixels;
+
+	//Set the pixel
+	pixels[ ( y * surface->w ) + x ] = pixel;
+}
+
+SDL_Texture* Utils::loadFromSurface(SDL_Surface* surface) {
+
+	return SDL_CreateTextureFromSurface(_renderer.get(), surface);
 }
 
 void Utils::clear() {

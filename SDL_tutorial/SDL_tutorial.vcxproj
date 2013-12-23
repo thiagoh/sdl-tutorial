@@ -12,10 +12,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IoriMovements.cpp" />
+    <ClCompile Include="JSONObject.cpp" />
+    <ClCompile Include="SpritePiece.cpp" />
+    <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SpriteUtil.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JSONObject.h" />
+    <ClInclude Include="SpritePiece.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="SpriteUtil.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
@@ -65,7 +73,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;jansson.lib;janssond.lib;Box2D.lib;Box2Dd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>

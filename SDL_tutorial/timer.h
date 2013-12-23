@@ -8,27 +8,27 @@ class Timer {
 public:
     Timer();
     ///Start the timer
-    void Start();
+    void start();
     ///Stop the timer
-    void Stop();
+    void stop();
     ///Pause the timer
-    void Pause();
+    void pause();
     ///Unpause the timer
-    void Unpause();
+    void unpause();
     /**
     *  Restart the timer and return the elapsed ticks
     *  @return The elapsed ticks
     */
-    int Restart();
+    int restart();
     /**
     *  Get the elapsed ticks
     *  @return The elapsed ticks
     */
-    int Ticks() const;
+    int ticks() const;
     ///Check if Timer is started
-    bool Started() const;
+    bool started() const;
     ///Check if Timer is paused
-    bool Paused() const;
+    bool paused() const;
 
 private:
     int mStartTicks, mPausedTicks;

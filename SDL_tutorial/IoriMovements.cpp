@@ -5,8 +5,13 @@ and may not be redistributed without written permission.*/
 #include <sdl/SDL.h>
 #include <stdio.h>
 #include <string>
-
+#include "timer.h"
+#include "Sprite.h"
+#include "SpriteUtil.h"
 #include "utils.h"
+
+//The frames per second
+const int FRAMES_PER_SECOND = 15;
 
 void init() {
 
@@ -35,10 +40,27 @@ int main( int argc, char* args[] ) {
 	//Main loop flag
 	bool quit = false;
 
+	//Keep track of the current frame
+	int frame = 0;
+
+	//Whether or not to cap the frame rate
+	bool cap = true;
+
+	//The frame rate regulator
+	Timer fps;
+
 	int x = 0;
 	int y = 0;
-	int moveSpeed = 5;
+	int moveSpeed = 10;
 	SDL_Texture * texture = Utils::loadTexture("images/iori-stand.png");
+
+	SDL_Color redColor;
+	redColor.a = 255;
+	redColor.r = 255;
+	redColor.g = 0;
+	redColor.b = 0;
+
+	Sprite iori = SpriteUtil::process("images/iori-stand.png", redColor);
 
 	uint32_t lastDrawT = -1;
 
@@ -46,56 +68,64 @@ int main( int argc, char* args[] ) {
 	SDL_Event e;
 	bool draw = false;
 
-    SDL_EventState(SDL_KEYUP, SDL_IGNORE);
+	SDL_EventState(SDL_KEYUP, SDL_IGNORE);
 
 	//While application is running
 	while( !quit ) {
 
-		//Handle events on queue
-
-		uint32_t tx1 = SDL_GetTicks();
+		//Start the frame timer
+		fps.start();
 
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(NULL);
-
-		draw = false;
 
 		//User requests quit
 
 		if ( keys[SDL_SCANCODE_UP] ) {
 
-			y -= moveSpeed;
-			draw = true;
-
+			iori.decY(moveSpeed);
 		} 
+
 		if ( keys[SDL_SCANCODE_DOWN] ) {
 
-			y += moveSpeed;
-			draw = true;
-
+			iori.incY(moveSpeed);
 		} 
+
 		if ( keys[SDL_SCANCODE_LEFT] ) {
 
-			x -= moveSpeed;
-			draw = true;
-			printf("left\n");
-
+			iori.decX(moveSpeed);
 		} 
+
 		if ( keys[SDL_SCANCODE_RIGHT] ) {
 
-			x += moveSpeed;
-			draw = true;
-			printf("right\n");
+			iori.incX(moveSpeed);
 		}
 
-		if (draw) {
+		Utils::clear();
 
-			Utils::clear();
-			Utils::draw(texture, x, y);
-			Utils::present();
+		printf("index: %d\n", iori.getIndex());
+
+		//Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY());
+		Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY(), &(iori.current().getClip()));
+		Utils::present();
+
+		if (iori.hasNext())
+			iori.next();
+		else 
+			iori.reset();
+
+		//Increment the frame counter
+		frame++;
+
+		//If we want to cap the frame rate
+		if( ( cap == true ) && ( fps.ticks() < 1000 / FRAMES_PER_SECOND ) ) {
+
+			//Sleep the remaining frame time
+			Uint32 delay = (1000 / FRAMES_PER_SECOND) - fps.ticks();
+
+			SDL_Delay(delay);
+			//printf("delay %d\n", delay);
 		}
-
-		SDL_Delay(10);
 	}
 
 	Utils::clear();

@@ -1,4 +1,6 @@
 #include "SpriteUtil.h"
+#include <sdl/SDL.h>
+#include <sdl/SDL_image.h>
 
 SpriteUtil::SpriteUtil(void)
 {
@@ -9,51 +11,51 @@ SpriteUtil::~SpriteUtil(void)
 }
 
 
-SpriteSeq SpriteUtil::process(const char * filename, ALLEGRO_COLOR delimiterColor) {
+Sprite SpriteUtil::process(const char * filename, SDL_Color delimiterColor) {
 
-	#ifndef _AL_INIT_IMAGE_ADDON
-	#define _AL_INIT_IMAGE_ADDON
-	al_init_image_addon();
-	#endif
+	SDL_Surface* bitmap = IMG_Load(filename);
 
-	ALLEGRO_BITMAP *bitmap = al_load_bitmap(filename);
+	SDL_PixelFormat* format = bitmap->format;
+	Uint32* pixels = (Uint32*) bitmap->pixels;
+	Uint32 pixel, lastPixel = 0;
+	Uint32 delimiterColorPixel = SDL_MapRGBA(format, delimiterColor.r, delimiterColor.g, delimiterColor.b, delimiterColor.a);
 
-	SpriteSeq spriteSeq(bitmap, 0, 0);
+	Sprite sprite(bitmap, 0, 0);
 
-	ALLEGRO_COLOR pixel, lastPixel;
 	int lastSource = 0;
 
-	for(int i = 0; i <al_get_bitmap_width(bitmap); i++) {
+	for(int i = 0; i < bitmap->w; i++) {
 
-		pixel = al_get_pixel(bitmap, i, 0);
+		pixel = pixels[i];
 
-		if (memcmp(&pixel, &lastPixel, sizeof(ALLEGRO_COLOR))) {
+		if (pixel != lastPixel) {
 
-			if (!memcmp(&pixel, &delimiterColor, sizeof(ALLEGRO_COLOR))) {
+			if (pixel == delimiterColorPixel) {
 
 				i++; // current pixel is the red one, so, advance to next pixel
-				
-				if (spriteSeq.empty()) {
 
-					spriteSeq.add(Sprite(bitmap, 0, 0, i, al_get_bitmap_height(bitmap)));
+				if (sprite.empty()) {
+
+					sprite.add(SpritePiece(bitmap, 0, 0, i, bitmap->h));
 
 				} else {
 
-					spriteSeq.add(Sprite(bitmap, lastSource, 0, i - lastSource, al_get_bitmap_height(bitmap)));
+					sprite.add(SpritePiece(bitmap, lastSource, 0, i - lastSource, bitmap->h));
 				}
 
 				lastSource = i;
 			}
 
-		} else if(i == al_get_bitmap_width(bitmap) - 1) {
+		} else if(i == bitmap->w - 1) {
 
-			spriteSeq.add(Sprite(bitmap, lastSource, 0, i - lastSource, al_get_bitmap_height(bitmap)));
+			sprite.add(SpritePiece(bitmap, lastSource, 0, i - lastSource, bitmap->h));
 		}
 
 		lastPixel = pixel;
 	}
 
-	al_convert_mask_to_alpha(bitmap, al_map_rgba(255, 0, 0, 255));
-	
-	return spriteSeq;
+	SDL_SetColorKey(bitmap, SDL_TRUE, SDL_MapRGB(bitmap->format, 255, 0, 0));
+	//al_convert_mask_to_alpha(bitmap, al_map_rgba(255, 0, 0, 255));
+
+	return sprite;
 }
