@@ -40,7 +40,7 @@ public:
 	~Sprite() {
 
 	};
-		
+
 	void setInFrontOf(Positioned * inFrontOf) {
 
 		this->inFrontOf = inFrontOf;
@@ -180,4 +180,19 @@ public:
 
 		return spriteMap[currentState].at(_curIndex++);
 	}
+
+	SpritePiece nextCycling() {
+
+		if (hasNext()) {
+
+			return spriteMap[currentState].at(_curIndex++);
+
+		} else {
+
+			reset();
+
+			return spriteMap[currentState].at(_curIndex++);
+		}
+	}
+
 };

@@ -120,10 +120,7 @@ int main( int argc, char* args[] ) {
 		Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY(), &(iori.current().getClip()));
 		Utils::present();
 
-		if (iori.hasNext())
-			iori.next();
-		else 
-			iori.reset();
+		iori.nextCycling();
 
 		//Increment the frame counter
 		frame++;
