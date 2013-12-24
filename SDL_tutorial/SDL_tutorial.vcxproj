@@ -19,9 +19,12 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Body.h" />
     <ClInclude Include="JSONObject.h" />
+    <ClInclude Include="Positioned.h" />
     <ClInclude Include="SpritePiece.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="SpriteSequence.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

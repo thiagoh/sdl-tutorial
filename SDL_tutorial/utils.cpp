@@ -137,9 +137,7 @@ SDL_Texture* Utils::renderText(const string &message, const string& fontFile, SD
 
 	//Open the font
 
-	TTF_Font *font = nullptr;
-
-	font = TTF_OpenFont(fontFile.c_str(), fontSize);
+	TTF_Font *font = TTF_OpenFont(fontFile.c_str(), fontSize);
 
 	if (font == nullptr)
 		throw runtime_error("Failed to load font: " + fontFile + TTF_GetError());
@@ -155,6 +153,29 @@ SDL_Texture* Utils::renderText(const string &message, const string& fontFile, SD
 	TTF_CloseFont(font);
 
 	return texture;
+}
+
+int Utils::drawLine(int x1, int y1, int x2, int y2) {
+	
+	return SDL_RenderDrawLine(_renderer.get(), x1, y1, x2, y2);
+}
+
+int Utils::drawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+
+	Uint8 oldr, oldg, oldb, olda;
+	SDL_GetRenderDrawColor(_renderer.get(), &oldr, &oldg, &oldb, &olda);
+	SDL_SetRenderDrawColor(_renderer.get(), r, g, b, a);
+
+	int v = SDL_RenderDrawLine(_renderer.get(), x1, y1, x2, y2);
+
+	SDL_SetRenderDrawColor(_renderer.get(), oldr, oldg, oldb, olda);
+
+	return v;
+}
+
+int Utils::drawLine(int x1, int y1, int x2, int y2, SDL_Color color) {
+
+	return drawLine(x1, y1, x2, y2, color.r, color.g, color.b, color.a);
 }
 
 Uint32 Utils::getPixel32( SDL_Surface *surface, int x, int y ) {
@@ -191,7 +212,7 @@ SDL_Rect Utils::getBox() {
 	return mBox;
 }
 
-void Utils::addSpriteState(Sprite* sprite, int state, const char * filename, SDL_Color delimiterColor) {
+void Utils::addSpriteState(Character* Character, int state, const char * filename, SDL_Color delimiterColor, bool stoppable) {
 
 	SDL_Surface* bitmap = IMG_Load(filename);
 
@@ -237,5 +258,5 @@ void Utils::addSpriteState(Sprite* sprite, int state, const char * filename, SDL
 	SDL_SetColorKey(bitmap, SDL_TRUE, SDL_MapRGBA(bitmap->format, delimiterColor.r, delimiterColor.g, delimiterColor.b, delimiterColor.a));
 	//al_convert_mask_to_alpha(bitmap, al_map_rgba(255, 0, 0, 255));
 
-	sprite->addState(state, bitmap, spriteVector);
+	Character->addState(state, bitmap, spriteVector, stoppable);
 }

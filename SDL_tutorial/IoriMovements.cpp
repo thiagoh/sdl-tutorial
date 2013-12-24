@@ -4,10 +4,10 @@ and may not be redistributed without written permission.*/
 //Using SDL, standard IO, and strings
 #include <sdl/SDL.h>
 #include <stdio.h>
+#include <sstream>
 #include <string>
 #include "timer.h"
 #include "Sprite.h"
-#include "SpriteUtil.h"
 #include "utils.h"
 
 //The frames per second
@@ -60,11 +60,34 @@ int main( int argc, char* args[] ) {
 	redColor.g = 0;
 	redColor.b = 0;
 
-	Sprite iori(0, 0);
-	Utils::addSpriteState(&iori, 0, "images/iori-stand.png", redColor);
-	Utils::addSpriteState(&iori, 1, "images/iori-walking.png", redColor);
+	SDL_Color blueColor;
+	blueColor.a = 255;
+	blueColor.r = 0;
+	blueColor.g = 0;
+	blueColor.b = 255;
+
+	SDL_Color whiteColor;
+	whiteColor.a = 255;
+	whiteColor.r = 255;
+	whiteColor.g = 255;
+	whiteColor.b = 255;
+
+	Character iori(LookingTo::RIGHT, 0, 0);
+	Utils::addSpriteState(&iori, 0, "images/iori-stand.png", redColor, true);
+	Utils::addSpriteState(&iori, 1, "images/iori-walking.png", redColor, true);
+	Utils::addSpriteState(&iori, 2, "images/iori-strong-kick.png", redColor, false);
 
 	iori.setState(0);
+
+	Character iori2(LookingTo::RIGHT, 300, 200);
+	Utils::addSpriteState(&iori2, 0, "images/iori-stand.png", redColor, true);
+	Utils::addSpriteState(&iori2, 1, "images/iori-walking.png", redColor, true);
+	Utils::addSpriteState(&iori2, 2, "images/iori-strong-kick.png", redColor, false);
+
+	iori2.setState(0);
+
+	iori.setInFrontOf(&iori2);
+	iori2.setInFrontOf(&iori);
 
 	uint32_t lastDrawT = -1;
 
@@ -73,6 +96,8 @@ int main( int argc, char* args[] ) {
 	bool draw = false;
 
 	SDL_EventState(SDL_KEYUP, SDL_IGNORE);
+
+	int a = 0;
 
 	//While application is running
 	while( !quit ) {
@@ -83,33 +108,46 @@ int main( int argc, char* args[] ) {
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(NULL);
 
+		bool isAnimating = iori.isAnimating();
+
 		//User requests quit
 
-		if ( keys[SDL_SCANCODE_UP] ) {
-
-			iori.decY(moveSpeed);
-		} 
-
-		if ( keys[SDL_SCANCODE_DOWN] ) {
-
-			iori.incY(moveSpeed);
-		} 
-
-		if ( keys[SDL_SCANCODE_LEFT] ) {
-
-			iori.decX(moveSpeed);
-			iori.setState(1);
-		} 
-
-		if ( keys[SDL_SCANCODE_RIGHT] ) {
-
-			iori.incX(moveSpeed);
-			iori.setState(1);
-		}
-
-		if (!keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT] ) {
-
+		if (isAnimating && iori.isAnimationFinished())
 			iori.setState(0);
+
+		if (isAnimating) {
+
+		} else {
+
+			if ( keys[SDL_SCANCODE_UP] ) {
+
+				iori.decY(moveSpeed);
+			} 
+
+			if ( keys[SDL_SCANCODE_DOWN] ) {
+
+				iori.incY(moveSpeed);
+			} 
+
+			if ( keys[SDL_SCANCODE_LEFT] ) {
+
+				iori.decX(moveSpeed);
+				iori.setState(1);
+			} 
+
+			if ( keys[SDL_SCANCODE_RIGHT] ) {
+
+				iori.incX(moveSpeed);
+				iori.setState(1);
+			}
+
+			if ( keys[SDL_SCANCODE_A] ) {
+
+				iori.setState(2);
+			}
+
+			if (!iori.isAnimating() && !keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT] ) 
+				iori.setState(0);
 		}
 
 		Utils::clear();
@@ -117,10 +155,28 @@ int main( int argc, char* args[] ) {
 		printf("index: %d\n", iori.getIndex());
 
 		//Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY());
-		Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY(), &(iori.current().getClip()));
+
+		Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY(), &(iori.currentSprite().getClip()), 0.0f, iori.getDrawFlags());
+		Utils::drawLine(iori.getX(), iori.getY(), iori.getX(), iori.getY() - 10, blueColor);
+		Utils::drawLine(iori.getRawX(), iori.getY() - 10, iori.getRawX(), iori.getY() - 20, redColor);
+
+		Utils::draw(Utils::loadFromSurface(iori2.getBitmap()), iori2.getX(), iori2.getY(), &(iori2.currentSprite().getClip()), 0.0f, iori2.getDrawFlags());
+		Utils::drawLine(iori2.getX(), iori2.getY(), iori2.getX(), iori2.getY() - 10, blueColor);
+		Utils::drawLine(iori2.getRawX(), iori2.getY() - 10, iori2.getRawX(), iori2.getY() - 20, redColor);
+
+		std::stringstream sstm;
+		sstm << "iori1: x = " << iori.getX() << ", y = " << iori.getY();
+		Utils::draw(Utils::renderText(sstm.str(), "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 10);
+
+		sstm.str("");
+		sstm.clear();
+		sstm << "iori2: x = " << iori2.getX() << ", y = " << iori2.getY();
+		Utils::draw(Utils::renderText(sstm.str(), "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 30);
+
 		Utils::present();
 
-		iori.nextCycling();
+		iori.nextSpriteCycling();
+		iori2.nextSpriteCycling();
 
 		//Increment the frame counter
 		frame++;

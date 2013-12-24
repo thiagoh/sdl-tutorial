@@ -1,17 +1,9 @@
 #pragma once
 
 #include <sdl/SDL.h>
+#include "Body.h"
 
-namespace LookingTo {
-	
-	enum {
-
-		RIGHT = 1,
-		LEFT = 2
-	};
-}
-
-class SpritePiece {
+class SpritePiece : public Body {
 
 private:
 	int sx;
@@ -20,10 +12,7 @@ private:
 	
 public:
 
-	float width;
-	float height;
-	
-	SpritePiece(SDL_Surface* bitmap, int sx, int sy, float width, float height);
+	SpritePiece(SDL_Surface* bitmap, int sx, int sy, int width, int height);
 	~SpritePiece();
 	
 	SDL_Surface* getBitmap();

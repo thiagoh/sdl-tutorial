@@ -4,108 +4,34 @@
 #include <map>
 #include <sdl/SDL.h>
 #include "SpritePiece.h"
+#include "Body.h"
+#include "Positioned.h"
+#include "SpriteSequence.h"
 
-class Positioned {
-
-public:
-
-	int virtual getCenterX() = 0;
-	int virtual getCenterY() = 0;
-};
-
-class Sprite : public Positioned {
+class Character : public Positioned {
 
 private:
-	int x;
-	int y;
 	int currentState;
-	Positioned * inFrontOf;
-
-	int lookingTo;
-	bool lookingToUpdated;
-
-	std::map<int, SDL_Surface*> surfaceMap;
-	std::map<int, std::vector<SpritePiece>> spriteMap;
-	unsigned int _curIndex;
+	std::map<int, SpriteSequence> spriteMap;
 
 public:
 
-	Sprite(int x, int y) : x(x), y(y), surfaceMap(), spriteMap(), _curIndex(0) {
-
-		inFrontOf = 0;
-		lookingTo = LookingTo::RIGHT;
-		lookingToUpdated = false;
-	};
-
-	~Sprite() {
+	Character(int lookingTo, int x, int y) : Positioned(lookingTo, x, y), spriteMap() {
 
 	};
 
-	void setInFrontOf(Positioned * inFrontOf) {
+	~Character() {
 
-		this->inFrontOf = inFrontOf;
-	}
-
-	int getDrawFlags() {
-
-		if (!inFrontOf)
-			return 0;
-
-		updateLookingTo();
-
-		if (lookingTo == LookingTo::LEFT)
-			return SDL_FLIP_HORIZONTAL;
-
-		return 0;
 	};
 
-	int virtual getCenterX() {
+	int getCenterX() {
 
-		return x + (current().width / 2);
+		return x + (currentSprite().getWidth() / 2);
 	};
 
-	int virtual getCenterY() {
+	int getCenterY() {
 
-		return y + (current().height / 2);
-	};
-
-	int virtual getX() {
-
-		return x;
-	};
-
-	int virtual getY() {
-
-		return y;
-	};
-
-	void updateLookingTo() {
-
-		if (!inFrontOf)
-			return;	
-
-		int inFrontOfCenterX = inFrontOf->getCenterX();
-
-		if (this->getCenterX() > inFrontOfCenterX && lookingTo != LookingTo::LEFT) {
-
-			lookingTo = LookingTo::LEFT;
-			lookingToUpdated = true;
-
-		} else if (this->getCenterX() < inFrontOfCenterX && lookingTo != LookingTo::RIGHT) {
-
-			lookingTo = LookingTo::RIGHT;
-			lookingToUpdated = true;
-		}
-	};
-
-	void setX(int x) {
-
-		this->x = x;
-	};
-
-	void setY(int y) {
-
-		this->y = y;
+		return y + (currentSprite().getHeight() / 2);
 	};
 
 	void incX(int delta) {
@@ -134,65 +60,75 @@ public:
 			return;
 
 		currentState = state;
-		_curIndex = 0;
+		spriteMap.at(currentState).reset();
 	}
 
-	void addState(int state, SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector) {
+	int getState() {
 
-		surfaceMap.insert(std::pair<int, SDL_Surface*>(state, surface));
-		spriteMap.insert(std::pair<int, std::vector<SpritePiece>>(state, spritePieceVector));
+		return currentState;
+	}
+
+	void addState(int state, SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector, bool stoppable = false) {
+
+		SpriteSequence spriteSeq(surface, spritePieceVector, stoppable);
+
+		spriteMap.insert(std::pair<int, SpriteSequence>(state, spriteSeq));
 	}
 
 	SDL_Surface * getBitmap() {
 
-		return surfaceMap[currentState];
+		return spriteMap.at(currentState).getBitmap();
 	};
 
 	size_t size() {
 
-		return spriteMap[currentState].size();
+		return spriteMap.at(currentState).size();
 	};
 
 	size_t getIndex() {
 
-		return _curIndex;
+		return spriteMap.at(currentState).getIndex();
 	}
 
-	bool hasNext() {
+	virtual Body getBody() {
 
-		return _curIndex + 1 < size();
-	};
-
-	void reset() {
-
-		_curIndex = 0;
-	};
-
-	SpritePiece current() {
-
-		return spriteMap[currentState].at(_curIndex);
+		return currentSprite();
 	}
 
-	SpritePiece next() {
+	SpritePiece currentSprite() {
 
-		if (!hasNext())
-			return current();
-
-		return spriteMap[currentState].at(_curIndex++);
+		return spriteMap.at(currentState).current();
 	}
 
-	SpritePiece nextCycling() {
+	SpritePiece nextSprite() {
 
-		if (hasNext()) {
-
-			return spriteMap[currentState].at(_curIndex++);
-
-		} else {
-
-			reset();
-
-			return spriteMap[currentState].at(_curIndex++);
-		}
+		return spriteMap.at(currentState).next();
 	}
 
+	SpritePiece nextSpriteCycling() {
+
+		return spriteMap.at(currentState).nextCycling();
+	}
+
+	bool hasNextSprite() {
+
+		return spriteMap.at(currentState).hasNext();
+	}
+
+	bool isAnimating() {
+
+		SpriteSequence spriteSeq = spriteMap.at(currentState);
+
+		if (!spriteSeq.isStoppable() && !spriteSeq.isFinished() && spriteSeq.hasNext())
+			return true;
+
+		return false;
+	}
+
+	bool isAnimationFinished() {
+
+		SpriteSequence spriteSeq = spriteMap.at(currentState);
+
+		return spriteSeq.isFinished() || !spriteSeq.hasNext();
+	}
 };

@@ -1,7 +1,7 @@
 #include "SpritePiece.h"
 
-SpritePiece::SpritePiece(SDL_Surface* bitmap, int sx, int sy, float width, float height) 
-	: bitmap(bitmap), sx(sx), sy(sy), width(width), height(height) {
+SpritePiece::SpritePiece(SDL_Surface* bitmap, int sx, int sy, int width, int height) 
+	: bitmap(bitmap), sx(sx), sy(sy), Body(width, height) {
 
 };
 
@@ -17,8 +17,8 @@ SDL_Surface* SpritePiece::getBitmap() {
 SDL_Rect SpritePiece::getClip() {
 
 	SDL_Rect rect;
-	rect.h = height;
-	rect.w = width;
+	rect.h = getHeight();
+	rect.w = getWidth();
 	rect.x = sx;
 	rect.y = sy;
 
