@@ -1,13 +1,14 @@
 #pragma once
 
 #include<vector>
+#include <map>
 #include <sdl/SDL.h>
 #include "SpritePiece.h"
 
 class Positioned {
-	
+
 public:
-	
+
 	int virtual getCenterX() = 0;
 	int virtual getCenterY() = 0;
 };
@@ -17,28 +18,29 @@ class Sprite : public Positioned {
 private:
 	int x;
 	int y;
+	int currentState;
 	Positioned * inFrontOf;
-	
+
 	int lookingTo;
 	bool lookingToUpdated;
-	
-	SDL_Surface * bitmap;
-	std::vector<SpritePiece> sprites;
+
+	std::map<int, SDL_Surface*> surfaceMap;
+	std::map<int, std::vector<SpritePiece>> spriteMap;
 	unsigned int _curIndex;
 
 public:
 
-	Sprite(SDL_Surface* bitmap, int x, int y) : bitmap(bitmap), x(x), y(y), sprites(), _curIndex(0) {
-		
+	Sprite(int x, int y) : x(x), y(y), surfaceMap(), spriteMap(), _curIndex(0) {
+
 		inFrontOf = 0;
 		lookingTo = LookingTo::RIGHT;
 		lookingToUpdated = false;
 	};
-	
-	~Sprite() {
-		
-	};
 
+	~Sprite() {
+
+	};
+		
 	void setInFrontOf(Positioned * inFrontOf) {
 
 		this->inFrontOf = inFrontOf;
@@ -48,15 +50,15 @@ public:
 
 		if (!inFrontOf)
 			return 0;
-			
+
 		updateLookingTo();
-		
+
 		if (lookingTo == LookingTo::LEFT)
 			return SDL_FLIP_HORIZONTAL;
 
 		return 0;
 	};
-	
+
 	int virtual getCenterX() {
 
 		return x + (current().width / 2);
@@ -78,19 +80,19 @@ public:
 	};
 
 	void updateLookingTo() {
-	
+
 		if (!inFrontOf)
 			return;	
-			
+
 		int inFrontOfCenterX = inFrontOf->getCenterX();
-			
+
 		if (this->getCenterX() > inFrontOfCenterX && lookingTo != LookingTo::LEFT) {
-		
+
 			lookingTo = LookingTo::LEFT;
 			lookingToUpdated = true;
-			
+
 		} else if (this->getCenterX() < inFrontOfCenterX && lookingTo != LookingTo::RIGHT) {
-		
+
 			lookingTo = LookingTo::RIGHT;
 			lookingToUpdated = true;
 		}
@@ -115,7 +117,7 @@ public:
 
 		this->y += delta;
 	};
-	
+
 	void decX(int delta) {
 
 		this->x -= delta;
@@ -125,25 +127,30 @@ public:
 
 		this->y -= delta;
 	};
-	
+
+	void setState(int state) {
+
+		if (currentState == state)
+			return;
+
+		currentState = state;
+		_curIndex = 0;
+	}
+
+	void addState(int state, SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector) {
+
+		surfaceMap.insert(std::pair<int, SDL_Surface*>(state, surface));
+		spriteMap.insert(std::pair<int, std::vector<SpritePiece>>(state, spritePieceVector));
+	}
+
 	SDL_Surface * getBitmap() {
 
-		return bitmap;
-	};
-
-	void add(SpritePiece SpritePiece) {
-
-		sprites.push_back(SpritePiece);
-	};
-
-	bool empty() {
-
-		return sprites.empty();
+		return surfaceMap[currentState];
 	};
 
 	size_t size() {
 
-		return sprites.size();
+		return spriteMap[currentState].size();
 	};
 
 	size_t getIndex() {
@@ -153,24 +160,24 @@ public:
 
 	bool hasNext() {
 
-		return _curIndex + 1 < sprites.size();
+		return _curIndex + 1 < size();
 	};
 
 	void reset() {
 
 		_curIndex = 0;
 	};
-	
+
 	SpritePiece current() {
 
-		return sprites[_curIndex];
+		return spriteMap[currentState].at(_curIndex);
 	}
 
 	SpritePiece next() {
-	
+
 		if (!hasNext())
 			return current();
-			
-		return sprites[_curIndex++];
+
+		return spriteMap[currentState].at(_curIndex++);
 	}
 };
