@@ -54,7 +54,7 @@ Sprite SpriteUtil::process(const char * filename, SDL_Color delimiterColor) {
 		lastPixel = pixel;
 	}
 
-	SDL_SetColorKey(bitmap, SDL_TRUE, SDL_MapRGB(bitmap->format, 255, 0, 0));
+	//SDL_SetColorKey(bitmap, SDL_TRUE, SDL_MapRGB(bitmap->format, 255, 0, 0));
 	//al_convert_mask_to_alpha(bitmap, al_map_rgba(255, 0, 0, 255));
 
 	return sprite;

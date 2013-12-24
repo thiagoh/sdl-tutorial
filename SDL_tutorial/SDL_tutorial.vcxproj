@@ -15,7 +15,6 @@
     <ClCompile Include="JSONObject.cpp" />
     <ClCompile Include="SpritePiece.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="SpriteUtil.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -23,7 +22,6 @@
     <ClInclude Include="JSONObject.h" />
     <ClInclude Include="SpritePiece.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="SpriteUtil.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

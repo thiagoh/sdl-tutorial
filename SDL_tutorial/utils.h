@@ -9,6 +9,8 @@
 #include <sdl/SDL.h>
 #endif
 
+#include "Sprite.h"
+
 using namespace std;
 
 /**
@@ -75,8 +77,10 @@ public:
 	static SDL_Texture* renderText(const char* message, const char* fontFile, SDL_Color color, int fontSize);
     static SDL_Texture* renderText(const string &message, const string &fontFile, SDL_Color color, int fontSize);
 
-	static Uint32 getPixel32( SDL_Surface *surface, int x, int y );
-	static void putPixel32( SDL_Surface *surface, int x, int y, Uint32 pixel);
+	static void addSpriteState(Sprite* sprite, int state, const char * filename, SDL_Color delimiterColor);
+
+	static Uint32 getPixel32(SDL_Surface *surface, int x, int y);
+	static void putPixel32(SDL_Surface *surface, int x, int y, Uint32 pixel);
 
     ///Clear the renderer
     static void clear();

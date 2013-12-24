@@ -11,7 +11,7 @@ and may not be redistributed without written permission.*/
 #include "utils.h"
 
 //The frames per second
-const int FRAMES_PER_SECOND = 15;
+const int FRAMES_PER_SECOND = 14;
 
 void init() {
 
@@ -60,7 +60,11 @@ int main( int argc, char* args[] ) {
 	redColor.g = 0;
 	redColor.b = 0;
 
-	Sprite iori = SpriteUtil::process("images/iori-stand.png", redColor);
+	Sprite iori(0, 0);
+	Utils::addSpriteState(&iori, 0, "images/iori-stand.png", redColor);
+	Utils::addSpriteState(&iori, 1, "images/iori-walking.png", redColor);
+
+	iori.setState(0);
 
 	uint32_t lastDrawT = -1;
 
@@ -94,11 +98,18 @@ int main( int argc, char* args[] ) {
 		if ( keys[SDL_SCANCODE_LEFT] ) {
 
 			iori.decX(moveSpeed);
+			iori.setState(1);
 		} 
 
 		if ( keys[SDL_SCANCODE_RIGHT] ) {
 
 			iori.incX(moveSpeed);
+			iori.setState(1);
+		}
+
+		if (!keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT] ) {
+
+			iori.setState(0);
 		}
 
 		Utils::clear();
