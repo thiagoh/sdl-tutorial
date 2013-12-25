@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "Conf.h"
 #include <string>
 #include <stdexcept>
 #include <memory>
@@ -9,7 +10,7 @@
 #include <sdl/SDL.h>
 #endif
 
-#include "Sprite.h"
+#include "Character.h"
 
 using namespace std;
 
@@ -90,6 +91,7 @@ public:
 	static void clear();
 	///Present the renderer, ie. update screen
 	static void present();
+
 	///Get the window's box
 	static SDL_Rect getBox();
 

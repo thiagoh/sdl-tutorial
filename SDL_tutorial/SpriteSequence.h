@@ -3,9 +3,10 @@
 #include <sdl/SDL.h>
 #include<vector>
 #include <map>
+#include <algorithm>
 #include "SpritePiece.h"
 
-class SpriteSequence {
+class SpriteSequence : public Body {
 
 private:
 	SDL_Surface* bitmap;
@@ -13,11 +14,16 @@ private:
 	bool finished;
 	std::vector<SpritePiece> sprites;
 	unsigned int _curIndex;
+	static bool cmpW(SpritePiece& s1, SpritePiece& s2) { return s1.getWidth() < s2.getWidth(); }	
 
 public:
 
-	SpriteSequence(SDL_Surface* bitmap, std::vector<SpritePiece> sprites, bool stoppable) : bitmap(bitmap), sprites(sprites), stoppable(stoppable), _curIndex(0), finished(false) {
+	SpriteSequence(SDL_Surface* bitmap, std::vector<SpritePiece> sprites, bool stoppable) : bitmap(bitmap), sprites(sprites), stoppable(stoppable), _curIndex(0), finished(false), Body() {
 
+		std::vector<SpritePiece>::iterator s = std::max_element(sprites.begin(), sprites.end(), SpriteSequence::cmpW);
+		
+		setWidth((*s).getWidth());
+		setHeight((*s).getHeight());
 	}
 
 	bool isStoppable() {

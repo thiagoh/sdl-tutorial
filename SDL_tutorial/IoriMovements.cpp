@@ -7,11 +7,11 @@ and may not be redistributed without written permission.*/
 #include <sstream>
 #include <string>
 #include "timer.h"
-#include "Sprite.h"
+#include "Character.h"
 #include "utils.h"
 
 //The frames per second
-const int FRAMES_PER_SECOND = 14;
+const int FRAMES_PER_SECOND = 15;
 
 void init() {
 
@@ -72,14 +72,14 @@ int main( int argc, char* args[] ) {
 	whiteColor.g = 255;
 	whiteColor.b = 255;
 
-	Character iori(LookingTo::RIGHT, 0, 0);
+	Character iori(LookingTo::RIGHT, 0, BOTTOM_BOUNDARY_Y);
 	Utils::addSpriteState(&iori, 0, "images/iori-stand.png", redColor, true);
 	Utils::addSpriteState(&iori, 1, "images/iori-walking.png", redColor, true);
 	Utils::addSpriteState(&iori, 2, "images/iori-strong-kick.png", redColor, false);
 
 	iori.setState(0);
 
-	Character iori2(LookingTo::RIGHT, 300, 200);
+	Character iori2(LookingTo::RIGHT, 300, BOTTOM_BOUNDARY_Y);
 	Utils::addSpriteState(&iori2, 0, "images/iori-stand.png", redColor, true);
 	Utils::addSpriteState(&iori2, 1, "images/iori-walking.png", redColor, true);
 	Utils::addSpriteState(&iori2, 2, "images/iori-strong-kick.png", redColor, false);
@@ -154,23 +154,28 @@ int main( int argc, char* args[] ) {
 
 		printf("index: %d\n", iori.getIndex());
 
-		//Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY());
+		//Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getDrawX(), iori.getDrawY());
 
-		Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getX(), iori.getY(), &(iori.currentSprite().getClip()), 0.0f, iori.getDrawFlags());
-		Utils::drawLine(iori.getX(), iori.getY(), iori.getX(), iori.getY() - 10, blueColor);
-		Utils::drawLine(iori.getRawX(), iori.getY() - 10, iori.getRawX(), iori.getY() - 20, redColor);
+		iori.draw();
+		iori2.draw();
 
-		Utils::draw(Utils::loadFromSurface(iori2.getBitmap()), iori2.getX(), iori2.getY(), &(iori2.currentSprite().getClip()), 0.0f, iori2.getDrawFlags());
-		Utils::drawLine(iori2.getX(), iori2.getY(), iori2.getX(), iori2.getY() - 10, blueColor);
-		Utils::drawLine(iori2.getRawX(), iori2.getY() - 10, iori2.getRawX(), iori2.getY() - 20, redColor);
+		Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getDrawX(), iori.getDrawY(), &(iori.currentSprite().getClip()), 0.0f, iori.getDrawFlags());
+		Utils::drawLine(iori.getDrawX(), iori.getDrawY(), iori.getDrawX(), iori.getDrawY() - 10, blueColor);
+		Utils::drawLine(iori.getX(), iori.getDrawY() - 10, iori.getX(), iori.getDrawY() - 20, redColor);
+
+		Utils::draw(Utils::loadFromSurface(iori2.getBitmap()), iori2.getDrawX(), iori2.getDrawY(), &(iori2.currentSprite().getClip()), 0.0f, iori2.getDrawFlags());
+		Utils::drawLine(iori2.getDrawX(), iori2.getDrawY(), iori2.getDrawX(), iori2.getDrawY() - 10, blueColor);
+		Utils::drawLine(iori2.getX(), iori2.getDrawY() - 10, iori2.getX(), iori2.getDrawY() - 20, redColor);
 
 		std::stringstream sstm;
-		sstm << "iori1: x = " << iori.getX() << ", y = " << iori.getY();
+		sstm << "iori1: drawx = " << iori.getDrawX() << ", drawy = " << iori.getDrawY() << " x = " << iori.getX() << ", y = " << iori.getY()
+			<< " maxWidth = " << iori.getMaxWidth() << " curWidth = " << iori.getBody().getWidth();
 		Utils::draw(Utils::renderText(sstm.str(), "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 10);
 
 		sstm.str("");
 		sstm.clear();
-		sstm << "iori2: x = " << iori2.getX() << ", y = " << iori2.getY();
+		sstm << "iori2: drawx = " << iori2.getDrawX() << ", drawy = " << iori2.getDrawY() << " x = " << iori2.getX() << ", y = " << iori2.getY()
+			<< " maxWidth = " << iori2.getMaxWidth() << " curWidth = " << iori2.getBody().getWidth();
 		Utils::draw(Utils::renderText(sstm.str(), "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 30);
 
 		Utils::present();

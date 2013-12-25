@@ -24,6 +24,75 @@ public:
 
 	};
 
+	void draw() {
+
+		updateLookingTo();
+	}
+
+	SDL_RendererFlip getDrawFlags() {
+
+		if (!getInFrontOf())
+			return SDL_FLIP_NONE;
+
+		if (lookingTo == LookingTo::LEFT)
+			return SDL_FLIP_HORIZONTAL;
+
+		return SDL_FLIP_NONE;
+	};
+
+	void updateLookingTo() {
+
+		if (!getInFrontOf())
+			return;	
+
+		Character* characterInFrontOf = (Character*) getInFrontOf();
+
+		if (lookingTo == LookingTo::RIGHT) {
+
+			if (getX() + (getMaxWidth() / 2) > characterInFrontOf->getX() - (characterInFrontOf->getMaxWidth() / 2)) {
+
+				lookingTo = LookingTo::LEFT;
+				incX(getMaxWidth());
+			}
+
+		} else if (lookingTo == LookingTo::LEFT) {
+
+			if (getX() - (getMaxWidth() / 2) < getInFrontOf()->getX() + (characterInFrontOf->getMaxWidth() / 2)) {
+
+				lookingTo = LookingTo::RIGHT;
+				decX(getMaxWidth());
+			}
+		}
+	};
+
+	int getDrawX() {
+
+		if (lookingTo == LookingTo::RIGHT)
+			return x;
+
+		return x - getMaxWidth();
+	};
+
+	int getMaxWidth() {
+
+		return spriteMap.at(currentState).getWidth();
+	}
+
+	int getMaxHeight() {
+
+		return spriteMap.at(currentState).getHeight();
+	}
+
+	Body getBody() {
+
+		return currentSprite();
+	}
+
+	int getDrawY() {
+
+		return y - getMaxHeight();
+	};
+
 	int getCenterX() {
 
 		return x + (currentSprite().getWidth() / 2);
@@ -32,26 +101,6 @@ public:
 	int getCenterY() {
 
 		return y + (currentSprite().getHeight() / 2);
-	};
-
-	void incX(int delta) {
-
-		this->x += delta;
-	};
-
-	void incY(int delta) {
-
-		this->y += delta;
-	};
-
-	void decX(int delta) {
-
-		this->x -= delta;
-	};
-
-	void decY(int delta) {
-
-		this->y -= delta;
 	};
 
 	void setState(int state) {
@@ -88,11 +137,6 @@ public:
 	size_t getIndex() {
 
 		return spriteMap.at(currentState).getIndex();
-	}
-
-	virtual Body getBody() {
-
-		return currentSprite();
 	}
 
 	SpritePiece currentSprite() {

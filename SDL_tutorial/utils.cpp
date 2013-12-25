@@ -20,10 +20,6 @@ unique_ptr<SDL_Renderer, void (*)(SDL_Renderer*)> Utils::_renderer = unique_ptr<
 //other static members
 SDL_Rect Utils::mBox;
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
 void Utils::init(string title) {
 
 	//initialize all SDL subsystems

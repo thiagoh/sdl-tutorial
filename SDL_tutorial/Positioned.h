@@ -1,7 +1,8 @@
 #pragma once
 
-#include <sdl/SDL.h>
+#include "Conf.h"
 #include "Body.h"
+#include <sdl/SDL.h>
 
 namespace LookingTo {
 
@@ -27,58 +28,19 @@ public:
 		inFrontOf = 0;
 	}
 
+	Positioned* getInFrontOf() {
+
+		return inFrontOf;
+	}
+
 	void setInFrontOf(Positioned * inFrontOf) {
 
 		this->inFrontOf = inFrontOf;
 	}
 
-	virtual Body getBody() = 0;
-
-	SDL_RendererFlip getDrawFlags() {
-
-		if (!inFrontOf)
-			return SDL_FLIP_NONE;
-
-		updateLookingTo();
-
-		if (lookingTo == LookingTo::LEFT)
-			return SDL_FLIP_HORIZONTAL;
-
-		return SDL_FLIP_NONE;
-	};
-
-	void updateLookingTo() {
-
-		if (!inFrontOf)
-			return;	
-
-		if (lookingTo == LookingTo::RIGHT) {
-
-			if (getRawX() + getBody().getWidth() > inFrontOf->getRawX()) {
-
-				lookingTo = LookingTo::LEFT;
-			}
-
-		} else if (lookingTo == LookingTo::LEFT) {
-
-			if (getRawX() < inFrontOf->getRawX() + inFrontOf->getBody().getWidth()) {
-
-				lookingTo = LookingTo::RIGHT;
-			}
-		}
-	};
-
-	int getRawX() {
-
-		return x;
-	};
-
 	int getX() {
 
-		if (lookingTo == LookingTo::RIGHT)
-			return x;
-
-		return x - getBody().getWidth();
+		return x;
 	};
 
 	int getY() {
@@ -93,6 +55,33 @@ public:
 
 	void setY(int y) {
 
+		if (y > BOTTOM_BOUNDARY_Y)
+			return;
+
 		this->y = y;
 	};
+
+	void incX(int delta) {
+
+		this->x += delta;
+	};
+
+	void incY(int delta) {
+
+		if (y + delta > BOTTOM_BOUNDARY_Y)
+			return;
+
+		this->y += delta;
+	};
+
+	void decX(int delta) {
+
+		this->x -= delta;
+	};
+
+	void decY(int delta) {
+
+		this->y -= delta;
+	};
+
 };

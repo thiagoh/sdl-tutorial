@@ -7,6 +7,10 @@ private:
 	int height;
 
 public:
+	
+	Body() : width(0), height(0) {
+
+	}
 
 	Body(int width, int height) : width(width), height(height) {
 
@@ -20,5 +24,15 @@ public:
 	int getHeight() {
 
 		return height;
+	}
+
+	void setWidth(int width) {
+
+		this->width = width;
+	}
+
+	void setHeight(int height) {
+
+		this->height = height;
 	}
 };
