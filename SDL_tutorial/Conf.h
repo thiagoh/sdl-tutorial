@@ -9,4 +9,7 @@ const int LEFT_BOUNDARY_X = 10;
 const int RIGHT_BOUNDARY_X = 630;
 const int BOTTOM_BOUNDARY_Y = 470;
 
+//The frames per second
+const int FRAMES_PER_SECOND = 15;
+
 #endif

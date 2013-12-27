@@ -70,7 +70,13 @@ public:
 		if (lookingTo == LookingTo::RIGHT)
 			return x;
 
-		return x - getMaxWidth();
+		return x - currentSprite().getWidth(); // is that correct
+		//return x - getMaxWidth();//
+	};
+
+	int getDrawY() {
+
+		return y - getMaxHeight();
 	};
 
 	int getMaxWidth() {
@@ -87,11 +93,6 @@ public:
 
 		return currentSprite();
 	}
-
-	int getDrawY() {
-
-		return y - getMaxHeight();
-	};
 
 	int getCenterX() {
 

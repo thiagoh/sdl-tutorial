@@ -6,12 +6,10 @@ and may not be redistributed without written permission.*/
 #include <stdio.h>
 #include <sstream>
 #include <string>
+#include "Conf.h"
 #include "timer.h"
 #include "Character.h"
 #include "utils.h"
-
-//The frames per second
-const int FRAMES_PER_SECOND = 15;
 
 void init() {
 
@@ -72,14 +70,14 @@ int main( int argc, char* args[] ) {
 	whiteColor.g = 255;
 	whiteColor.b = 255;
 
-	Character iori(LookingTo::RIGHT, 0, BOTTOM_BOUNDARY_Y);
+	Character iori(LookingTo::RIGHT, 400, BOTTOM_BOUNDARY_Y);
 	Utils::addSpriteState(&iori, 0, "images/iori-stand.png", redColor, true);
 	Utils::addSpriteState(&iori, 1, "images/iori-walking.png", redColor, true);
 	Utils::addSpriteState(&iori, 2, "images/iori-strong-kick.png", redColor, false);
 
 	iori.setState(0);
 
-	Character iori2(LookingTo::RIGHT, 300, BOTTOM_BOUNDARY_Y);
+	Character iori2(LookingTo::RIGHT, 100, BOTTOM_BOUNDARY_Y);
 	Utils::addSpriteState(&iori2, 0, "images/iori-stand.png", redColor, true);
 	Utils::addSpriteState(&iori2, 1, "images/iori-walking.png", redColor, true);
 	Utils::addSpriteState(&iori2, 2, "images/iori-strong-kick.png", redColor, false);
