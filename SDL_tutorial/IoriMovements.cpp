@@ -11,6 +11,8 @@ and may not be redistributed without written permission.*/
 #include "Character.h"
 #include "utils.h"
 
+#include <fastformat/fastformat.hpp>
+
 void init() {
 
 	try {
@@ -165,16 +167,16 @@ int main( int argc, char* args[] ) {
 		Utils::drawLine(iori2.getDrawX(), iori2.getDrawY(), iori2.getDrawX(), iori2.getDrawY() - 10, blueColor);
 		Utils::drawLine(iori2.getX(), iori2.getDrawY() - 10, iori2.getX(), iori2.getDrawY() - 20, redColor);
 
-		std::stringstream sstm;
-		sstm << "iori1: drawx = " << iori.getDrawX() << ", drawy = " << iori.getDrawY() << " x = " << iori.getX() << ", y = " << iori.getY()
-			<< " maxWidth = " << iori.getMaxWidth() << " curWidth = " << iori.getBody().getWidth();
-		Utils::draw(Utils::renderText(sstm.str(), "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 10);
+		string so;
+		string tmpl = "{0} drawx = {1}, drawy = {2}, x = {3}, y = {4}, maxwidth = {5}, curWidth = {6}";
+		fastformat::fmt(so, tmpl, "iori1", iori.getDrawX(), iori.getDrawY(), iori.getX(), iori.getY(), iori.getMaxWidth(), iori.getBody().getWidth());
 
-		sstm.str("");
-		sstm.clear();
-		sstm << "iori2: drawx = " << iori2.getDrawX() << ", drawy = " << iori2.getDrawY() << " x = " << iori2.getX() << ", y = " << iori2.getY()
-			<< " maxWidth = " << iori2.getMaxWidth() << " curWidth = " << iori2.getBody().getWidth();
-		Utils::draw(Utils::renderText(sstm.str(), "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 30);
+		Utils::draw(Utils::renderText(so, "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 10);
+
+		so.erase();
+		fastformat::fmt(so, tmpl, "iori2", iori2.getDrawX(), iori2.getDrawY(), iori2.getX(), iori2.getY(), iori2.getMaxWidth(), iori2.getBody().getWidth());
+
+		Utils::draw(Utils::renderText(so, "SourceSansPro-Regular.ttf", whiteColor, 14), 10, 30);
 
 		Utils::present();
 
