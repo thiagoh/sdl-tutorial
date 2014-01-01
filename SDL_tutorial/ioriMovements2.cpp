@@ -97,19 +97,22 @@ int main( int argc, char* args[] ) {
 
 	//Event handler
 	SDL_Event e;
-	
+
 	bool draw = false;
 
 	SDL_EventState(SDL_KEYUP, SDL_IGNORE);
-
 	int a = 0;
-	Event kick(SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A);
+
+	vector<Event*> events;
+	//events.push_back(new Event(SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A));
+	events.push_back(new Event(SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A));
 
 	//While application is running
 	while( !quit ) {
 
 		//Start the frame timer
 		fps.start();
+
 
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -125,41 +128,51 @@ int main( int argc, char* args[] ) {
 
 		} else {
 
+			bool anyMatched = false;
+
+			for (std::vector<Event*>::iterator it = events.begin(); it != events.end() && !anyMatched; it++) {
+
+				Event* eventToMatch = *it;
+
+				int result = eventToMatch->match(keys, fps.ticks());
+
+				if (result == EventMatch::MATCH_COMPLETE) {
+
+					iori.setState(2);
+					anyMatched = true;
+
+				} else if (result == EventMatch::MATCH_NO_MATCH) {
+
+					eventToMatch->reset();
+
+				} else if (result == EventMatch::MATCH_PARTIALLY) {
+
+				}
+
+				//printf("ticks: %d \tresult %s\n", actionTimer.ticks(), (result == EventMatch::MATCH_COMPLETE ? "Match Complete" : "No Match"));
+			}
+
+
 			if ( keys[SDL_SCANCODE_UP] ) {
 
-				//iori.decY(moveSpeed * (delta.ticks() / 1000.0f));
 				iori.decY(moveSpeed);
 			} 
 
 			if ( keys[SDL_SCANCODE_DOWN] ) {
 
-				//iori.incY(moveSpeed * (delta.ticks() / 1000.0f));
 				iori.incY(moveSpeed);
 			} 
 
 			if ( keys[SDL_SCANCODE_LEFT] ) {
 
-				//iori.decX(moveSpeed * (delta.ticks() / 1000.0f));
 				iori.decX(moveSpeed);
 				iori.setState(1);
 			} 
 
 			if ( keys[SDL_SCANCODE_RIGHT] ) {
 
-				//iori.incX(moveSpeed * (delta.ticks() / 1000.0f));
 				iori.incX(moveSpeed);
 				iori.setState(1);
-			}
-			/*
-			if ( keys[SDL_SCANCODE_A] ) {
-
-				iori.setState(2);
-			}
-			*/
-
-			if (kick.match(keys, fps.ticks()) == EventMatch::MATCH_COMPLETE) {
-
-				iori.setState(2);
 			}
 
 			if (!iori.isAnimating() && !keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT] ) 
@@ -168,7 +181,7 @@ int main( int argc, char* args[] ) {
 
 		Utils::clear();
 
-		printf("index: %d\n", iori.getIndex());
+		//printf("index: %d\n", iori.getIndex());
 
 		//Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getDrawX(), iori.getDrawY());
 

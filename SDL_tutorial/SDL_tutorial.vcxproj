@@ -11,7 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IoriMovements.cpp" />
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="ioriMovements2.cpp" />
     <ClCompile Include="JSONObject.cpp" />
     <ClCompile Include="SpritePiece.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -22,6 +23,7 @@
   <ItemGroup>
     <ClInclude Include="Body.h" />
     <ClInclude Include="Conf.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="JSONObject.h" />
     <ClInclude Include="Positioned.h" />
     <ClInclude Include="SpritePiece.h" />
