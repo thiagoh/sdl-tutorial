@@ -1,38 +1,41 @@
-#include "Event.h"
+#include "KeyMatcher.h"
 
-
-void Event::init() {
+void KeyMatcher::init() {
 
 	_ix = 0;
-}
+};
 
-Event::Event(int key1) {
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
-}
-Event::Event(int key1, int key2) {
+};
+
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1, int key2) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
 	keys.push_back(key2);
-}
-Event::Event(int key1, int key2, int key3) {
+};
+
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1, int key2, int key3) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
 	keys.push_back(key2);
 	keys.push_back(key3);
-}
-Event::Event(int key1, int key2, int key3, int key4) {
+};
+
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1, int key2, int key3, int key4) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
 	keys.push_back(key2);
 	keys.push_back(key3);
 	keys.push_back(key4);
-}
-Event::Event(int key1, int key2, int key3, int key4, int key5) {
+};
+
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1, int key2, int key3, int key4, int key5) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
@@ -40,8 +43,9 @@ Event::Event(int key1, int key2, int key3, int key4, int key5) {
 	keys.push_back(key3);
 	keys.push_back(key4);
 	keys.push_back(key5);
-}
-Event::Event(int key1, int key2, int key3, int key4, int key5, int key6) {
+};
+
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1, int key2, int key3, int key4, int key5, int key6) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
@@ -50,8 +54,9 @@ Event::Event(int key1, int key2, int key3, int key4, int key5, int key6) {
 	keys.push_back(key4);
 	keys.push_back(key5);
 	keys.push_back(key6);
-}
-Event::Event(int key1, int key2, int key3, int key4, int key5, int key6, int key7) {
+};
+
+KeyMatcher::KeyMatcher(ActionCallback* actionCallback, int key1, int key2, int key3, int key4, int key5, int key6, int key7) : actionCallback(actionCallback) {
 
 	init();
 	keys.push_back(key1);
@@ -61,19 +66,19 @@ Event::Event(int key1, int key2, int key3, int key4, int key5, int key6, int key
 	keys.push_back(key5);
 	keys.push_back(key6);
 	keys.push_back(key7);
-}
+};
 
-void Event::reset() {
+void KeyMatcher::reset() {
 
 	_ix = 0;
 }
 
-std::vector<int> Event::getKeys() {
+std::vector<int> KeyMatcher::getKeys() {
 
 	return keys;
 }
 
-int Event::match(const Uint8* keys, int ticks) {
+int KeyMatcher::match(const Uint8* keys, int ticks) {
 
 	if (_ix > 0 && ticks > 200) {
 
@@ -112,6 +117,11 @@ int Event::match(const Uint8* keys, int ticks) {
 	}
 }
 
-Event::~Event(void) {
+ActionCallback* KeyMatcher::getAction() {
+
+	return actionCallback;
+}
+
+KeyMatcher::~KeyMatcher(void) {
 
 }

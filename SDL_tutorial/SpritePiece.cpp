@@ -23,4 +23,4 @@ SDL_Rect SpritePiece::getClip() {
 	rect.y = sy;
 
 	return rect;
-}
+};

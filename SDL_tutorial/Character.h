@@ -3,177 +3,61 @@
 #include<vector>
 #include <map>
 #include <sdl/SDL.h>
+#include "KeyMatcher.h"
 #include "SpritePiece.h"
 #include "Body.h"
 #include "Positioned.h"
 #include "SpriteSequence.h"
+#include "State.h"
 
 class Character : public Positioned {
 
 private:
-	int currentState;
-	std::map<int, SpriteSequence> spriteMap;
+	std::vector<State*> states;
+	State* currentState;
+	State* defaultState;
 
 public:
 
-	Character(int lookingTo, int x, int y) : Positioned(lookingTo, x, y), spriteMap() {
+	Character(int lookingTo, int x, int y);
+	~Character();
 
-	};
+	void draw();
 
-	~Character() {
+	SDL_RendererFlip getDrawFlags();
 
-	};
+	void updateLookingTo();
 
-	void draw() {
+	int getDrawX();
+	int getDrawY();
 
-		updateLookingTo();
-	}
+	State* getCurrentState();
 
-	SDL_RendererFlip getDrawFlags() {
+	std::vector<State*> getStates();
+	int getMaxWidth();
+	int getMaxHeight();
 
-		if (!getInFrontOf())
-			return SDL_FLIP_NONE;
+	Body getBody();
 
-		if (lookingTo == LookingTo::LEFT)
-			return SDL_FLIP_HORIZONTAL;
+	int getCenterX();
+	int getCenterY();
 
-		return SDL_FLIP_NONE;
-	};
+	void setState(State* state);
+	void setToDefaultState();
+	State* getState();
 
-	void updateLookingTo() {
+	void addDefaultState(SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector);
+	void addState(SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector, KeyMatcher* _event, bool stoppable);
+	void addState(SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector, std::vector<KeyMatcher*> events, bool stoppable);
 
-		if (!getInFrontOf())
-			return;	
+	SDL_Surface * getBitmap();
+	size_t size();
+	size_t getIndex();
 
-		Character* characterInFrontOf = (Character*) getInFrontOf();
-
-		if (lookingTo == LookingTo::RIGHT) {
-
-			if (getX() + (getMaxWidth() / 2) > characterInFrontOf->getX() - (characterInFrontOf->getMaxWidth() / 2)) {
-
-				lookingTo = LookingTo::LEFT;
-				incX(getMaxWidth());
-			}
-
-		} else if (lookingTo == LookingTo::LEFT) {
-
-			if (getX() - (getMaxWidth() / 2) < getInFrontOf()->getX() + (characterInFrontOf->getMaxWidth() / 2)) {
-
-				lookingTo = LookingTo::RIGHT;
-				decX(getMaxWidth());
-			}
-		}
-	};
-
-	int getDrawX() {
-
-		if (lookingTo == LookingTo::RIGHT)
-			return x;
-
-		return x - currentSprite().getWidth(); // is that correct
-		//return x - getMaxWidth();//
-	};
-
-	int getDrawY() {
-
-		return y - getMaxHeight();
-	};
-
-	int getMaxWidth() {
-
-		return spriteMap.at(currentState).getWidth();
-	}
-
-	int getMaxHeight() {
-
-		return spriteMap.at(currentState).getHeight();
-	}
-
-	Body getBody() {
-
-		return currentSprite();
-	}
-
-	int getCenterX() {
-
-		return x + (currentSprite().getWidth() / 2);
-	};
-
-	int getCenterY() {
-
-		return y + (currentSprite().getHeight() / 2);
-	};
-
-	void setState(int state) {
-
-		if (currentState == state)
-			return;
-
-		currentState = state;
-		spriteMap.at(currentState).reset();
-	}
-
-	int getState() {
-
-		return currentState;
-	}
-
-	void addState(int state, SDL_Surface* surface, std::vector<SpritePiece> spritePieceVector, bool stoppable = false) {
-
-		SpriteSequence spriteSeq(surface, spritePieceVector, stoppable);
-
-		spriteMap.insert(std::pair<int, SpriteSequence>(state, spriteSeq));
-	}
-
-	SDL_Surface * getBitmap() {
-
-		return spriteMap.at(currentState).getBitmap();
-	};
-
-	size_t size() {
-
-		return spriteMap.at(currentState).size();
-	};
-
-	size_t getIndex() {
-
-		return spriteMap.at(currentState).getIndex();
-	}
-
-	SpritePiece currentSprite() {
-
-		return spriteMap.at(currentState).current();
-	}
-
-	SpritePiece nextSprite() {
-
-		return spriteMap.at(currentState).next();
-	}
-
-	SpritePiece nextSpriteCycling() {
-
-		return spriteMap.at(currentState).nextCycling();
-	}
-
-	bool hasNextSprite() {
-
-		return spriteMap.at(currentState).hasNext();
-	}
-
-	bool isAnimating() {
-
-		SpriteSequence spriteSeq = spriteMap.at(currentState);
-
-		if (!spriteSeq.isStoppable() && !spriteSeq.isFinished() && spriteSeq.hasNext())
-			return true;
-
-		return false;
-	}
-
-	bool isAnimationFinished() {
-
-		SpriteSequence spriteSeq = spriteMap.at(currentState);
-
-		return spriteSeq.isFinished() || !spriteSeq.hasNext();
-	}
+	SpritePiece currentSprite();
+	SpritePiece nextSprite();
+	SpritePiece nextSpriteCycling();
+	bool hasNextSprite();
+	bool isAnimating();
+	bool isAnimationFinished();
 };

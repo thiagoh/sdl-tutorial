@@ -152,7 +152,7 @@ SDL_Texture* Utils::renderText(const string &message, const string& fontFile, SD
 }
 
 int Utils::drawLine(int x1, int y1, int x2, int y2) {
-	
+
 	return SDL_RenderDrawLine(_renderer.get(), x1, y1, x2, y2);
 }
 
@@ -208,7 +208,25 @@ SDL_Rect Utils::getBox() {
 	return mBox;
 }
 
-void Utils::addSpriteState(Character* Character, int state, const char * filename, SDL_Color delimiterColor, bool stoppable) {
+void Utils::addSpriteDefaultState(Character* character, const char * filename, SDL_Color delimiterColor) {
+
+	vector<KeyMatcher*> events;
+	addSpriteState(character, filename, delimiterColor, true, events, false);
+}
+
+void Utils::addSpriteState(Character* character, const char * filename, SDL_Color delimiterColor, KeyMatcher* _event, bool stoppable) {
+
+	vector<KeyMatcher*> events;
+	events.push_back(_event);
+	addSpriteState(character, filename, delimiterColor, events, stoppable);
+}
+
+void Utils::addSpriteState(Character* character, const char * filename, SDL_Color delimiterColor, vector<KeyMatcher*> events, bool stoppable) {
+
+	addSpriteState(character, filename, delimiterColor, false, events, stoppable);
+}
+
+void Utils::addSpriteState(Character* character, const char * filename, SDL_Color delimiterColor, bool _default, vector<KeyMatcher*> events, bool stoppable) {
 
 	SDL_Surface* bitmap = IMG_Load(filename);
 
@@ -254,5 +272,12 @@ void Utils::addSpriteState(Character* Character, int state, const char * filenam
 	SDL_SetColorKey(bitmap, SDL_TRUE, SDL_MapRGBA(bitmap->format, delimiterColor.r, delimiterColor.g, delimiterColor.b, delimiterColor.a));
 	//al_convert_mask_to_alpha(bitmap, al_map_rgba(255, 0, 0, 255));
 
-	Character->addState(state, bitmap, spriteVector, stoppable);
+	if (_default) {
+
+		character->addDefaultState(bitmap, spriteVector);
+
+	} else {
+
+		character->addState(bitmap, spriteVector, events, stoppable);
+	}
 }

@@ -17,5 +17,4 @@ public:
 	
 	SDL_Surface* getBitmap();
 	SDL_Rect getClip();
-	
 };

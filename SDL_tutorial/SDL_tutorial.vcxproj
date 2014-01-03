@@ -11,27 +11,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Event.cpp" />
-    <ClCompile Include="ioriMovements2.cpp" />
-    <ClCompile Include="JSONObject.cpp" />
-    <ClCompile Include="SpritePiece.cpp" />
-    <ClCompile Include="Character.cpp" />
-    <ClCompile Include="timer.cpp" />
-    <ClCompile Include="utils.cpp" />
-    <ClCompile Include="World.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Body.h" />
     <ClInclude Include="Conf.h" />
-    <ClInclude Include="Event.h" />
+    <ClInclude Include="KeyMatcher.h" />
+    <ClInclude Include="ActionCallback.h" />
+    <ClInclude Include="GeneralActions.h" />
+    <ClInclude Include="IoriActions.h" />
     <ClInclude Include="JSONObject.h" />
     <ClInclude Include="Positioned.h" />
     <ClInclude Include="SpritePiece.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="SpriteSequence.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="IoriActions.cpp" />
+    <ClCompile Include="KeyMatcher.cpp" />
+    <ClCompile Include="GeneralActions.cpp" />
+    <ClCompile Include="ioriMovements2.cpp" />
+    <ClCompile Include="JSONObject.cpp" />
+    <ClCompile Include="SpritePiece.cpp" />
+    <ClCompile Include="SpriteSequence.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="timer.cpp" />
+    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C05D985F-DD3E-4457-982F-453FAA0B92A1}</ProjectGuid>
@@ -78,6 +86,7 @@
       </AdditionalIncludeDirectories>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

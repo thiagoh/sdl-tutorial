@@ -82,7 +82,9 @@ public:
 	static int drawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 	static int drawLine(int x1, int y1, int x2, int y2, SDL_Color color);
 
-	static void addSpriteState(Character* Character, int state, const char * filename, SDL_Color delimiterColor, bool stoppable);
+	static void addSpriteDefaultState(Character* character, const char * filename, SDL_Color delimiterColor);
+	static void addSpriteState(Character* Character, const char * filename, SDL_Color delimiterColor, KeyMatcher* _event, bool stoppable);
+	static void addSpriteState(Character* Character, const char * filename, SDL_Color delimiterColor, vector<KeyMatcher*> events, bool stoppable);
 
 	static Uint32 getPixel32(SDL_Surface *surface, int x, int y);
 	static void putPixel32(SDL_Surface *surface, int x, int y, Uint32 pixel);
@@ -99,6 +101,8 @@ private:
 	static unique_ptr<SDL_Window, void (*)(SDL_Window*)> _window;
 	static unique_ptr<SDL_Renderer, void (*)(SDL_Renderer*)> _renderer;
 	static SDL_Rect mBox;
+
+	static void addSpriteState(Character* Character, const char * filename, SDL_Color delimiterColor, bool _default, vector<KeyMatcher*> events, bool stoppable);
 };
 
 #endif

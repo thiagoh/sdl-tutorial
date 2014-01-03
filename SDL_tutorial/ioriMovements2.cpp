@@ -10,7 +10,10 @@ and may not be redistributed without written permission.*/
 #include "timer.h"
 #include "Character.h"
 #include "utils.h"
-#include "Event.h"
+#include "KeyMatcher.h"
+#include "ActionCallback.h"
+#include "GeneralActions.h"
+#include "IoriActions.h"
 
 #include <fastformat/fastformat.hpp>
 
@@ -52,7 +55,6 @@ int main( int argc, char* args[] ) {
 
 	int x = 0;
 	int y = 0;
-	int moveSpeed = 10;
 	SDL_Texture * texture = Utils::loadTexture("images/iori-stand.png");
 
 	string so;
@@ -76,26 +78,34 @@ int main( int argc, char* args[] ) {
 	whiteColor.g = 255;
 	whiteColor.b = 255;
 
-	Character iori(LookingTo::RIGHT, 400, BOTTOM_BOUNDARY_Y);
-	Utils::addSpriteState(&iori, 0, "images/iori-stand.png", redColor, true);
-	Utils::addSpriteState(&iori, 1, "images/iori-walking.png", redColor, true);
-	Utils::addSpriteState(&iori, 2, "images/iori-strong-kick.png", redColor, false);
+	ActionCallback* moveRightAction = new MoveRightAction();
+	ActionCallback* moveLeftAction = new MoveLeftAction();
+	ActionCallback* kickAction = new KickAction();
 
-	iori.setState(0);
+	Character iori(LookingTo::RIGHT, 400, BOTTOM_BOUNDARY_Y);
+	Utils::addSpriteDefaultState(&iori, "images/iori-stand.png", redColor);
+
+	vector<KeyMatcher*> walkingEvents;
+	walkingEvents.push_back(new KeyMatcher(moveLeftAction, SDL_SCANCODE_LEFT));
+	walkingEvents.push_back(new KeyMatcher(moveRightAction, SDL_SCANCODE_RIGHT));
+
+	KeyMatcher* kickEvent = new KeyMatcher(kickAction, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A);
+
+	Utils::addSpriteState(&iori, "images/iori-walking.png", redColor, walkingEvents, true);
+	Utils::addSpriteState(&iori, "images/iori-strong-kick.png", redColor, kickEvent, false);
 
 	Character iori2(LookingTo::RIGHT, 100, BOTTOM_BOUNDARY_Y);
-	Utils::addSpriteState(&iori2, 0, "images/iori-stand.png", redColor, true);
-	Utils::addSpriteState(&iori2, 1, "images/iori-walking.png", redColor, true);
-	Utils::addSpriteState(&iori2, 2, "images/iori-strong-kick.png", redColor, false);
+	Utils::addSpriteDefaultState(&iori2, "images/iori-stand.png", redColor);
 
-	iori2.setState(0);
+	Utils::addSpriteState(&iori2, "images/iori-walking.png", redColor, walkingEvents, true);
+	Utils::addSpriteState(&iori2, "images/iori-strong-kick.png", redColor, kickEvent, false);
 
 	iori.setInFrontOf(&iori2);
 	iori2.setInFrontOf(&iori);
 
 	uint32_t lastDrawT = -1;
 
-	//Event handler
+	//KeyMatcher handler
 	SDL_Event e;
 
 	bool draw = false;
@@ -103,16 +113,11 @@ int main( int argc, char* args[] ) {
 	SDL_EventState(SDL_KEYUP, SDL_IGNORE);
 	int a = 0;
 
-	vector<Event*> events;
-	//events.push_back(new Event(SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A));
-	events.push_back(new Event(SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A));
-
 	//While application is running
 	while( !quit ) {
 
 		//Start the frame timer
 		fps.start();
-
 
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -122,68 +127,46 @@ int main( int argc, char* args[] ) {
 		//User requests quit
 
 		if (isAnimating && iori.isAnimationFinished())
-			iori.setState(0);
+			iori.setToDefaultState();
 
 		if (isAnimating) {
 
 		} else {
 
 			bool anyMatched = false;
+			vector<State*> states = iori.getStates();
 
-			for (std::vector<Event*>::iterator it = events.begin(); it != events.end() && !anyMatched; it++) {
+			for (std::vector<State*>::iterator itStates = states.begin(); itStates != states.end() && !anyMatched; itStates++) {
 
-				Event* eventToMatch = *it;
+				vector<KeyMatcher*> events = (*itStates)->getEvents();
 
-				int result = eventToMatch->match(keys, fps.ticks());
+				for (std::vector<KeyMatcher*>::iterator it = events.begin(); it != events.end() && !anyMatched; it++) {
 
-				if (result == EventMatch::MATCH_COMPLETE) {
+					KeyMatcher* eventToMatch = *it;
 
-					iori.setState(2);
-					anyMatched = true;
+					int result = eventToMatch->match(keys, fps.ticks());
 
-				} else if (result == EventMatch::MATCH_NO_MATCH) {
+					if (result == EventMatch::MATCH_COMPLETE) {
 
-					eventToMatch->reset();
+						iori.setState(*itStates);
+						eventToMatch->getAction()->act(&iori);
+						anyMatched = true;
 
-				} else if (result == EventMatch::MATCH_PARTIALLY) {
+					} else if (result == EventMatch::MATCH_NO_MATCH) {
 
+						eventToMatch->reset();
+
+					} else if (result == EventMatch::MATCH_PARTIALLY) {
+
+					}
 				}
-
-				//printf("ticks: %d \tresult %s\n", actionTimer.ticks(), (result == EventMatch::MATCH_COMPLETE ? "Match Complete" : "No Match"));
-			}
-
-
-			if ( keys[SDL_SCANCODE_UP] ) {
-
-				iori.decY(moveSpeed);
-			} 
-
-			if ( keys[SDL_SCANCODE_DOWN] ) {
-
-				iori.incY(moveSpeed);
-			} 
-
-			if ( keys[SDL_SCANCODE_LEFT] ) {
-
-				iori.decX(moveSpeed);
-				iori.setState(1);
-			} 
-
-			if ( keys[SDL_SCANCODE_RIGHT] ) {
-
-				iori.incX(moveSpeed);
-				iori.setState(1);
 			}
 
 			if (!iori.isAnimating() && !keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT] ) 
-				iori.setState(0);
+				iori.setToDefaultState();
 		}
 
 		Utils::clear();
-
-		//printf("index: %d\n", iori.getIndex());
-
-		//Utils::draw(Utils::loadFromSurface(iori.getBitmap()), iori.getDrawX(), iori.getDrawY());
 
 		iori.draw();
 		iori2.draw();

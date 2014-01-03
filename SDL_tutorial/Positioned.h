@@ -11,7 +11,7 @@ namespace LookingTo {
 		RIGHT = 1,
 		LEFT = 2
 	};
-}
+};
 
 class Positioned {
 
