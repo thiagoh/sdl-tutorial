@@ -10,10 +10,19 @@
 #include "SpriteSequence.h"
 #include "State.h"
 
+struct orderByPriority {
+
+	bool operator()(const KeyMatcher & a, const KeyMatcher & b) {
+
+		return a.getPriority() < b.getPriority();
+	}
+};
+
 class Character : public Positioned {
 
 private:
 	std::vector<State*> states;
+	std::map<KeyMatcher, State*, orderByPriority> keyMatcherToState;
 	State* currentState;
 	State* defaultState;
 
@@ -31,9 +40,6 @@ public:
 	int getDrawX();
 	int getDrawY();
 
-	State* getCurrentState();
-
-	std::vector<State*> getStates();
 	int getMaxWidth();
 	int getMaxHeight();
 
@@ -42,6 +48,9 @@ public:
 	int getCenterX();
 	int getCenterY();
 
+	State* getCurrentState();
+	std::vector<State*> getStates();
+	std::map<KeyMatcher, State*, orderByPriority> getKeyMatcherToState();
 	void setState(State* state);
 	void setToDefaultState();
 	State* getState();

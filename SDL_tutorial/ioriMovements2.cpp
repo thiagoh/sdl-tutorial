@@ -86,10 +86,10 @@ int main( int argc, char* args[] ) {
 	Utils::addSpriteDefaultState(&iori, "images/iori-stand.png", redColor);
 
 	vector<KeyMatcher*> walkingEvents;
-	walkingEvents.push_back(new KeyMatcher(moveLeftAction, SDL_SCANCODE_LEFT));
-	walkingEvents.push_back(new KeyMatcher(moveRightAction, SDL_SCANCODE_RIGHT));
+	walkingEvents.push_back(new KeyMatcher("moveLeftMatcher", moveLeftAction, SDL_SCANCODE_LEFT, 0));
+	walkingEvents.push_back(new KeyMatcher("moveRightMatcher", moveRightAction, SDL_SCANCODE_RIGHT, 0));
 
-	KeyMatcher* kickEvent = new KeyMatcher(kickAction, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A);
+	KeyMatcher* kickEvent = new KeyMatcher("kickMatcher", kickAction, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_A, 10);
 
 	Utils::addSpriteState(&iori, "images/iori-walking.png", redColor, walkingEvents, true);
 	Utils::addSpriteState(&iori, "images/iori-strong-kick.png", redColor, kickEvent, false);
@@ -136,31 +136,57 @@ int main( int argc, char* args[] ) {
 			bool anyMatched = false;
 			vector<State*> states = iori.getStates();
 
-			for (std::vector<State*>::iterator itStates = states.begin(); itStates != states.end() && !anyMatched; itStates++) {
+			std::map<KeyMatcher, State*, orderByPriority> keyMatcherToState = iori.getKeyMatcherToState();
 
-				vector<KeyMatcher*> events = (*itStates)->getEvents();
+			for (std::map<KeyMatcher, State*, orderByPriority>::iterator itMap = keyMatcherToState.begin(); itMap != keyMatcherToState.end() && !anyMatched; itMap++) {
 
-				for (std::vector<KeyMatcher*>::iterator it = events.begin(); it != events.end() && !anyMatched; it++) {
+				KeyMatcher eventToMatch = itMap->first;
+				State* state = itMap->second;
 
-					KeyMatcher* eventToMatch = *it;
+				int result = eventToMatch.match(keys, fps.ticks());
 
-					int result = eventToMatch->match(keys, fps.ticks());
+				if (result == EventMatch::MATCH_COMPLETE) {
 
-					if (result == EventMatch::MATCH_COMPLETE) {
+					iori.setState(state);
+					eventToMatch.getAction()->act(&iori);
+					anyMatched = true;
 
-						iori.setState(*itStates);
-						eventToMatch->getAction()->act(&iori);
-						anyMatched = true;
+				} else if (result == EventMatch::MATCH_NO_MATCH) {
 
-					} else if (result == EventMatch::MATCH_NO_MATCH) {
+					eventToMatch.reset();
 
-						eventToMatch->reset();
+				} else if (result == EventMatch::MATCH_PARTIALLY) {
 
-					} else if (result == EventMatch::MATCH_PARTIALLY) {
-
-					}
 				}
 			}
+
+			/*
+			for (std::vector<State*>::iterator itStates = states.begin(); itStates != states.end() && !anyMatched; itStates++) {
+
+			vector<KeyMatcher*> events = (*itStates)->getEvents();
+
+			for (std::vector<KeyMatcher*>::iterator it = events.begin(); it != events.end() && !anyMatched; it++) {
+
+			KeyMatcher* eventToMatch = *it;
+
+			int result = eventToMatch->match(keys, fps.ticks());
+
+			if (result == EventMatch::MATCH_COMPLETE) {
+
+			iori.setState(*itStates);
+			eventToMatch->getAction()->act(&iori);
+			anyMatched = true;
+
+			} else if (result == EventMatch::MATCH_NO_MATCH) {
+
+			eventToMatch->reset();
+
+			} else if (result == EventMatch::MATCH_PARTIALLY) {
+
+			}
+			}
+			}
+			*/
 
 			if (!iori.isAnimating() && !keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT] ) 
 				iori.setToDefaultState();

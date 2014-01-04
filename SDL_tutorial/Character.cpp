@@ -75,6 +75,11 @@ std::vector<State*> Character::getStates() {
 	return states;
 }
 
+std::map<KeyMatcher, State*, orderByPriority> Character::getKeyMatcherToState() {
+
+	return keyMatcherToState;
+}
+
 int Character::getMaxWidth() {
 
 	return getCurrentState()->getSpriteSequence()->getWidth();
@@ -144,6 +149,11 @@ void Character::addState(SDL_Surface* surface, std::vector<SpritePiece> spritePi
 	SpriteSequence * spriteSeq = new SpriteSequence(surface, spritePieceVector);
 
 	State * state = new State(spriteSeq, events, stoppable);
+
+	for (std::vector<KeyMatcher*>::iterator it = events.begin(); it != events.end(); it++) {
+
+		keyMatcherToState[**it] = state;
+	}
 
 	states.push_back(state);
 }
