@@ -36,6 +36,14 @@ void close() {
 	Utils::quit();
 }
 
+struct orderByPriority {
+
+	bool operator()(const KeyMatcher & a, const KeyMatcher & b) {
+
+		return b.getPriority() < a.getPriority();
+	}
+} orderByPriority;
+
 int main( int argc, char* args[] ) {
 
 	//Start up SDL and create window
@@ -136,18 +144,30 @@ int main( int argc, char* args[] ) {
 			bool anyMatched = false;
 			vector<State*> states = iori.getStates();
 
-			std::map<KeyMatcher, State*, orderByPriority> keyMatcherToState = iori.getKeyMatcherToState();
+			std::map<KeyMatcher, State*> keyMatcherToState = iori.getKeyMatcherToState();
+			std::vector<KeyMatcher> keyMatcherSorted;
 
-			for (std::map<KeyMatcher, State*, orderByPriority>::iterator itMap = keyMatcherToState.begin(); itMap != keyMatcherToState.end() && !anyMatched; itMap++) {
+			for (std::map<KeyMatcher, State*>::iterator itMap = keyMatcherToState.begin(); itMap != keyMatcherToState.end(); itMap++) 
+				keyMatcherSorted.push_back(itMap->first);
 
-				KeyMatcher eventToMatch = itMap->first;
-				State* state = itMap->second;
+			std::sort(keyMatcherSorted.begin(), keyMatcherSorted.end(), orderByPriority);
+
+			for (std::vector<KeyMatcher>::iterator itVector = keyMatcherSorted.begin(); itVector != keyMatcherSorted.end() && !anyMatched; itVector++) {
+
+				KeyMatcher eventToMatch = *itVector;
+
+				if (eventToMatch.getPriority() == 0)
+					continue;
 
 				int result = eventToMatch.match(keys, fps.ticks());
 
 				if (result == EventMatch::MATCH_COMPLETE) {
 
+					std::map<KeyMatcher, State*>::iterator itMap = keyMatcherToState.find(eventToMatch);
+					State* state = itMap->second;
+
 					iori.setState(state);
+
 					eventToMatch.getAction()->act(&iori);
 					anyMatched = true;
 

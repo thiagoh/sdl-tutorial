@@ -10,19 +10,21 @@
 #include "SpriteSequence.h"
 #include "State.h"
 
+/*
 struct orderByPriority {
 
 	bool operator()(const KeyMatcher & a, const KeyMatcher & b) {
 
-		return a.getPriority() < b.getPriority();
+		return b.getPriority() < a.getPriority();
 	}
 };
+*/
 
 class Character : public Positioned {
 
 private:
 	std::vector<State*> states;
-	std::map<KeyMatcher, State*, orderByPriority> keyMatcherToState;
+	std::map<KeyMatcher, State*> keyMatcherToState;
 	State* currentState;
 	State* defaultState;
 
@@ -50,7 +52,7 @@ public:
 
 	State* getCurrentState();
 	std::vector<State*> getStates();
-	std::map<KeyMatcher, State*, orderByPriority> getKeyMatcherToState();
+	std::map<KeyMatcher, State*> getKeyMatcherToState();
 	void setState(State* state);
 	void setToDefaultState();
 	State* getState();

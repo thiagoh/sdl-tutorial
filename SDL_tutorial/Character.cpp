@@ -75,7 +75,7 @@ std::vector<State*> Character::getStates() {
 	return states;
 }
 
-std::map<KeyMatcher, State*, orderByPriority> Character::getKeyMatcherToState() {
+std::map<KeyMatcher, State*> Character::getKeyMatcherToState() {
 
 	return keyMatcherToState;
 }
@@ -152,7 +152,7 @@ void Character::addState(SDL_Surface* surface, std::vector<SpritePiece> spritePi
 
 	for (std::vector<KeyMatcher*>::iterator it = events.begin(); it != events.end(); it++) {
 
-		keyMatcherToState[**it] = state;
+		keyMatcherToState.insert(std::make_pair(**it, state));
 	}
 
 	states.push_back(state);

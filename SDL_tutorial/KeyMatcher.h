@@ -43,8 +43,7 @@ public:
 
 	bool operator<(const KeyMatcher & b) const {
 
-		printf("s %s\n", keyMatcherId);
-		return keyMatcherId.compare(b.keyMatcherId) < 0;
+		return getKeyMatcherId().compare(b.getKeyMatcherId()) < 0;
 	};
 
 	~KeyMatcher(void);
