@@ -156,9 +156,6 @@ int main( int argc, char* args[] ) {
 
 				KeyMatcher eventToMatch = *itVector;
 
-				if (eventToMatch.getPriority() == 0)
-					continue;
-
 				int result = eventToMatch.match(keys, fps.ticks());
 
 				if (result == EventMatch::MATCH_COMPLETE) {
